@@ -1,4 +1,5 @@
 import qrcode
+import argparse
 from io import BytesIO
 
 def encode_url_to_qr(data: str, as_bytes: bool = False) -> None:
@@ -26,6 +27,26 @@ None.
     img = qr.make_image(fill_color="black", back_color="white")
     img.save("output.png")
 
-# Example usage
+def main():
+    parser = argparse.ArgumentParser(description="Generate a QR code from content")
+    parser.add_argument(
+        "--type",
+        choices=["url", "text"],
+        default="url",
+        help="Interpretation of the content (affects validation)",
+    )
+    parser.add_argument("content", help="The content to encode in the QR code")
+
+    args = parser.parse_args()
+
+    # For now both types are encoded the same; 'url' allows simple validation/normalization.
+    content = args.content
+    if args.type == "url":
+        # Basic normalization: strip spaces; no strict validation to avoid extra deps.
+        content = content.strip()
+
+    encode_url_to_qr(content, as_bytes=False)
+
+
 if __name__ == "__main__":
-    encode_url_to_qr("https://example.com", as_bytes=False)
+    main()
